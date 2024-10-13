@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Анализ вакансий - HH Анализатор{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Анализ вакансий</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form id="vacancyForm">
+            <div class="form-group">
+                <label for="job_title">Название должности:</label>
+                <input type="text" class="form-control" id="job_title" name="job_title" required>
+            </div>
+            <div class="form-group">
+                <label for="region">Регион:</label>
+                <input type="text" class="form-control" id="region" name="region">
+            </div>
+            <div class="form-group">
+                <label for="experience">Опыт работы:</label>
+                <select class="form-control" id="experience" name="experience">
+                    <option value="">Не имеет значения</option>
+                    <option value="noExperience">Нет опыта</option>
+                    <option value="between1And3">От 1 года до 3 лет</option>
+                    <option value="between3And6">От 3 до 6 лет</option>
+                    <option value="moreThan6">Более 6 лет</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="employment">Тип занятости:</label>
+                <select class="form-control" id="employment" name="employment">
+                    <option value="">Не имеет значения</option>
+                    <option value="full">Полная занятость</option>
+                    <option value="part">Частичная занятость</option>
+                    <option value="project">Проектная работа</option>
+                    <option value="volunteer">Волонтерство</option>
+                    <option value="probation">Стажировка</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="salary">Желаемая зарплата (руб.):</label>
+                <input type="number" class="form-control" id="salary" name="salary" min="0">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Анализировать</button>
+        </form>
+    </div>
+</div>
+<div id="results" class="mt-5" style="display: none;">
+    <h3 class="text-center mb-4">Результаты анализа</h3>
+    <div id="resultsContent"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#vacancyForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '/hh_api',
+                type: 'POST',
+                data: formData,
+                beforeSend: function() {
+                    $('#results').hide();
+                    $('button[type="submit"]').prop('disabled', true).html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Анализируем...'
+                    );
+                },
+                success: function(response) {
+                    $('#resultsContent').html(response);
+                    $('#results').show();
+                },
+                error: function() {
+                    $('#resultsContent').html('<div class="alert alert-danger">Произошла ошибка при выполнении анализа. Пожалуйста, попробуйте еще раз.</div>');
+                    $('#results').show();
+                },
+                complete: function() {
+                    $('button[type="submit"]').prop('disabled', false).text('Анализировать');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Результаты анализа вакансий</h1>
+
+<h2>Общая статистика:</h2>
+<ul>
+    <li>Всего вакансий: {{ results.total_vacancies }}</li>
+    <li>Средняя зарплата: {{ results.average_salary }}</li>
+    <li>Медианная зарплата: {{ results.median_salary }}</li>
+</ul>
+
+<h2>Топ навыков:</h2>
+<ul>
+    {% for skill, count in results.top_skills %}
+    <li>{{ skill }}: {{ count }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Распределение по опыту работы:</h2>
+{% if results.experience_distribution %}
+<ul>
+    {% for experience, count in results.experience_distribution.items() %}
+    <li>{{ experience }}: {{ count }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Информация о распределении по опыту работы недоступна.</p>
+{% endif %}
+
+<h2>Распределение по типу занятости:</h2>
+{% if results.employment_distribution %}
+<ul>
+    {% for employment, count in results.employment_distribution.items() %}
+    <li>{{ employment }}: {{ count }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Информация о распределении по типу занятости недоступна.</p>
+{% endif %}
+
+<h2>Топ компаний по количеству вакансий:</h2>
+<ul>
+    {% for company, count in results.top_companies %}
+    <li>{{ company }}: {{ count }}</li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('form') }}" class="btn btn-primary">Новый анализ</a>
+
+{% endblock %}

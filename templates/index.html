@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - HH Анализатор{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-5">Добро пожаловать в Анализатор вакансий HH</h1>
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center p-4">
+            <i class="fas fa-search feature-icon"></i>
+            <h3>Анализ рынка труда</h3>
+            <p>Получите актуальную информацию о тенденциях на рынке труда в вашей сфере.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center p-4">
+            <i class="fas fa-chart-line feature-icon"></i>
+            <h3>Статистика зарплат</h3>
+            <p>Узнайте средний уровень зарплат для вашей позиции в различных компаниях.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center p-4">
+            <i class="fas fa-briefcase feature-icon"></i>
+            <h3>Требования к кандидатам</h3>
+            <p>Изучите наиболее востребованные навыки и квалификации в вашей области.</p>
+        </div>
+    </div>
+</div>
+<div class="text-center mt-5">
+    <a href="{{ url_for('form') }}" class="btn btn-primary btn-lg">Начать анализ</a>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Контакты - HH Анализатор{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Свяжитесь с нами</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <div class="mb-4">
+                <i class="fas fa-envelope mr-2"></i> Email: contact@hhanalyzer.com
+            </div>
+            <div class="mb-4">
+                <i class="fas fa-phone mr-2"></i> Телефон: +7 (999) 123-45-67
+            </div>
+            <div class="mb-4">
+                <i class="fas fa-map-marker-alt mr-2"></i> Адрес: г. Москва, ул. Примерная, д. 123
+            </div>
+            <div class="mt-4">
+                <h4>Оставьте нам сообщение</h4>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Имя:</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Введите ваше имя" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Введите ваш email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Сообщение:</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Введите ваше сообщение" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane mr-2"></i>Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#contactForm').on('submit', function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                url: '/send_message',  // Этот URL нужно будет обработать на сервере
+                type: 'POST',
+                data: formData,
+                beforeSend: function() {
+                    $('button[type="submit"]').prop('disabled', true).html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Отправка...'
+                    );
+                },
+                success: function(response) {
+                    alert('Сообщение успешно отправлено!');
+                    $('#contactForm')[0].reset();
+                },
+                error: function() {
+                    alert('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.');
+                },
+                complete: function() {
+                    $('button[type="submit"]').prop('disabled', false).html('<i class="fas fa-paper-plane mr-2"></i>Отправить');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
