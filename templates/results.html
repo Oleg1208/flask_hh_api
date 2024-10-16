@@ -1,51 +1,125 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Результаты анализа вакансий</h1>
+<h1 class="mb-4">Результаты анализа вакансий</h1>
 
-<h2>Общая статистика:</h2>
-<ul>
-    <li>Всего вакансий: {{ results.total_vacancies }}</li>
-    <li>Средняя зарплата: {{ results.average_salary }}</li>
-    <li>Медианная зарплата: {{ results.median_salary }}</li>
-</ul>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Общая статистика</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Всего вакансий: {{ results.total_vacancies }}</li>
+                    <li class="list-group-item">Средняя зарплата: {{ "{:,.0f}".format(results.average_salary) }} ₽</li>
+                    <li class="list-group-item">Медианная зарплата: {{ "{:,.0f}".format(results.median_salary) }} ₽</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-<h2>Топ навыков:</h2>
-<ul>
-    {% for skill, count in results.top_skills %}
-    <li>{{ skill }}: {{ count }}</li>
-    {% endfor %}
-</ul>
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Топ навыков</h5>
+                {% for skill, count in results.top_skills %}
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ skill }}</span>
+                        <span>{{ count }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ (count / results.total_vacancies * 100)|round|int }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 
-<h2>Распределение по опыту работы:</h2>
-{% if results.experience_distribution %}
-<ul>
-    {% for experience, count in results.experience_distribution.items() %}
-    <li>{{ experience }}: {{ count }}</li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>Информация о распределении по опыту работы недоступна.</p>
-{% endif %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Распределение по опыту работы</h5>
+                {% if results.experience_distribution %}
+                    {% for experience, count in results.experience_distribution.items() %}
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ experience }}</span>
+                            <span>{{ count }}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ (count / results.total_vacancies * 100)|round|int }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Информация о распределении по опыту работы недоступна.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-<h2>Распределение по типу занятости:</h2>
-{% if results.employment_distribution %}
-<ul>
-    {% for employment, count in results.employment_distribution.items() %}
-    <li>{{ employment }}: {{ count }}</li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>Информация о распределении по типу занятости недоступна.</p>
-{% endif %}
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Распределение по типу занятости</h5>
+                {% if results.employment_distribution %}
+                    {% for employment, count in results.employment_distribution.items() %}
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ employment }}</span>
+                            <span>{{ count }}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ (count / results.total_vacancies * 100)|round|int }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Информация о распределении по типу занятости недоступна.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
-<h2>Топ компаний по количеству вакансий:</h2>
-<ul>
-    {% for company, count in results.top_companies %}
-    <li>{{ company }}: {{ count }}</li>
-    {% endfor %}
-</ul>
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Топ компаний по количеству вакансий</h5>
+        <table class="table table-striped" id="companiesTable">
+            <thead>
+                <tr>
+                    <th>Компания</th>
+                    <th>Количество вакансий</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company, count in results.top_companies %}
+                <tr>
+                    <td>{{ company }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <a href="{{ url_for('form') }}" class="btn btn-primary">Новый анализ</a>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#companiesTable').DataTable({
+            "pageLength": 10,
+            "lengthChange": false
+        });
+    });
+</script>
 {% endblock %}
