@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask_caching import Cache
 from hh_api import HHVacancyAnalyzer
+from database import get_db_connection
 import logging
 
 app = Flask(__name__)
@@ -44,10 +45,31 @@ def hh_api():
     try:
         # Вызываем метод analyze_vacancies
         results = analyzer.analyze_vacancies(job_title, region, experience, employment, salary)
+
+        # Форматирование данных для шаблона
+        results['average_salary'] = round(results['average_salary'], 2)
+        results['median_salary'] = round(results['median_salary'], 2)
+
+        # Преобразование Counter объектов в отсортированные списки
+        results['top_skills'] = results['top_skills'][:10]  # Берем только топ-10 навыков
+
         return render_template('results.html', results=results)
     except Exception as e:
         logging.error(f"Error in analyze_vacancies: {str(e)}", exc_info=True)
         return jsonify({'error': str(e)}), 400
+
+
+@app.route('/vacancies')
+def show_vacancies():
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM vacancies ORDER BY created_at DESC LIMIT 50')
+            vacancy_list = cursor.fetchall()
+        return render_template('vacancies.html', vacancies=vacancy_list)
+    except Exception as e:
+        logging.error(f"Error fetching vacancies: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Failed to fetch vacancies'}), 500
 
 
 @app.route('/send_message', methods=['POST'])

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}HH Анализатор{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -25,6 +26,9 @@
                 </li>
                 <li class="nav-item {% if request.endpoint == 'contacts' %}active{% endif %}">
                     <a class="nav-link" href="{{ url_for('contacts') }}">Контакты</a>
+                </li>
+                <li class="nav-item {% if request.endpoint == 'show_vacancies' %}active{% endif %}">
+                    <a class="nav-link" href="{{ url_for('show_vacancies') }}">Вакансии</a>
                 </li>
             </ul>
         </div>
